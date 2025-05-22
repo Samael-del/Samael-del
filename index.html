@@ -4,6 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <title>Current Affairs Quiz</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ff5722">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
   * {
@@ -12,7 +14,12 @@
   body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #4a90e2, #50e3c2);
+    min-height: 100vh;
+    background: 
+      linear-gradient(135deg, #e8cca2e0, #36458ed0),
+      url('data:image/svg+xml;utf8,<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="60" width="60" height="10" rx="2" fill="%23ffb300"/><rect x="20" y="50" width="40" height="10" rx="2" fill="%234caf50"/><rect x="30" y="40" width="20" height="10" rx="2" fill="%2336458e"/><rect x="36" y="20" width="8" height="20" rx="2" fill="%23ff5722"/><rect x="38" y="10" width="4" height="10" rx="2" fill="%23fff"/><circle cx="40" cy="70" r="3" fill="%2336458e"/></svg>');
+    background-repeat: repeat;
+    background-size: 180px 180px, cover;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -89,7 +96,7 @@
   }
   button.answer.wrong {
     background: #e57373;
-    border-color: #c62828;
+    border-color: #eeb6b6;
     color: white;
     cursor: default;
   }
@@ -147,35 +154,114 @@
     max-width: 200px;
     transition: background 0.3s ease;
   }
-#retry-btn:hover {
+  #retry-btn:hover {
     background: #1bd1b3;
-}
+  }
 
-/* General Knowledge Theme */
-body {
-    background: linear-gradient(135deg, #ff9800, #ffc107);
-}
-header {
+  /* General Knowledge Theme */
+  header {
     background: #ff5722;
-}
-button.answer:hover {
+  }
+  button.answer:hover {
     background: #ffcc80;
     color: #000;
-}
-#next-btn, #start-btn, #retry-btn {
+  }
+  #next-btn, #start-btn, #retry-btn {
     background: #ff5722;
-}
-#next-btn:hover, #start-btn:hover, #retry-btn:hover {
+  }
+  #next-btn:hover, #start-btn:hover, #retry-btn:hover {
     background: #e64a19;
-}
+  }
 
-/* Responsive fixes */
-@media (max-height: 600px) {
+  #progress-bar-container {
+    width: 100%;
+    background: #eee;
+    border-radius: 8px;
+    height: 12px;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+  #progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #ff5722;
+    transition: width 0.4s;
+  }
+  #share-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 18px;
+  }
+  #share-buttons button {
+    background: #ff5722;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  #share-twitter {
+    background: #1da1f2;
+  }
+  #share-buttons button:hover {
+    opacity: 0.85;
+  }
+
+  /* Responsive fixes */
+  @media (max-height: 600px) {
     #app {
         height: 100vh;
         max-height: none;
         border-radius: 0;
         box-shadow: none;
+    }
+  }
+
+  /* Mobile Responsiveness */
+  @media (max-width: 500px) {
+    #app {
+      max-width: 100vw;
+      max-height: none;
+      height: 100vh;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    main {
+      padding: 10px;
+    }
+    header {
+      font-size: 1.05rem;
+      padding: 12px 8px;
+    }
+    #question-text {
+      font-size: 1rem;
+      min-height: 40px;
+    }
+    button.answer,
+    #next-btn,
+    #start-btn,
+    #retry-btn {
+      font-size: 0.98rem;
+      padding: 10px 8px;
+      max-width: 100%;
+    }
+    #score-container h2 {
+      font-size: 1.3rem;
+    }
+    #score-container p {
+      font-size: 1rem;
+    }
+    #progress-bar-container {
+      height: 8px;
+      margin-bottom: 12px;
+    }
+    #share-buttons {
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
     }
   }
 </style>
@@ -188,6 +274,9 @@ button.answer:hover {
         <button id="start-btn" aria-label="Start Current Affairs Quiz">Start Quiz</button>
       </div>
       <div id="quiz-container" hidden>
+        <div id="progress-bar-container">
+          <div id="progress-bar"></div>
+        </div>
         <div id="question-number"></div>
         <div id="question-text"></div>
         <div id="answers" role="list"></div>
@@ -197,6 +286,11 @@ button.answer:hover {
       <div id="score-container" hidden>
         <h2>Quiz Finished!</h2>
         <p>Your Score: <span id="score"></span> / <span id="total-questions"></span></p>
+        <p>Percentage: <span id="score-percent"></span>%</p>
+        <div id="share-buttons">
+          <button id="share-whatsapp" aria-label="Share on WhatsApp">Share on WhatsApp</button>
+          <button id="share-twitter" aria-label="Share on Twitter">Share on Twitter</button>
+        </div>
         <button id="retry-btn" aria-label="Retry Quiz">Retry Quiz</button>
       </div>
     </main>
@@ -215,6 +309,10 @@ button.answer:hover {
   const scoreElem = document.getElementById('score');
   const totalQuestionsElem = document.getElementById('total-questions');
   const retryBtn = document.getElementById('retry-btn');
+  const progressBar = document.getElementById('progress-bar');
+  const shareWhatsappBtn = document.getElementById('share-whatsapp');
+  const shareTwitterBtn = document.getElementById('share-twitter');
+  const scorePercentElem = document.getElementById('score-percent');
 
   let questions = [];
   let currentQuestionIndex = 0;
@@ -239,8 +337,8 @@ button.answer:hover {
 
   // Fetch quiz questions from Open Trivia DB - General Knowledge 9 or 10 questions
   async function fetchQuestions() {
-    // Use General Knowledge category (9); type multiple choice; 10 questions
-    const url = 'https://opentdb.com/api.php?amount=10&category=9&type=multiple';
+    // Use General Knowledge category (9); type multiple choice; 5 questions
+    const url = 'https://opentdb.com/api.php?amount=5&category=9&type=multiple';
     try {
       const res = await fetch(url);
       const data = await res.json();
@@ -262,6 +360,12 @@ button.answer:hover {
     }
   }
 
+  function updateProgressBar() {
+    if (!progressBar) return;
+    const percent = ((currentQuestionIndex) / questions.length) * 100;
+    progressBar.style.width = percent + '%';
+  }
+
   function showQuestion() {
     answered = false;
     feedbackElem.textContent = '';
@@ -273,6 +377,8 @@ button.answer:hover {
       showScore();
       return;
     }
+
+    updateProgressBar();
 
     const q = questions[currentQuestionIndex];
     questionNumberElem.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
@@ -312,6 +418,29 @@ button.answer:hover {
     scoreContainer.hidden = false;
     scoreElem.textContent = score;
     totalQuestionsElem.textContent = questions.length;
+    // Calculate and show percentage
+    const percent = Math.round((score / questions.length) * 100);
+    scorePercentElem.textContent = percent;
+    // Fill progress bar to 100%
+    if (progressBar) progressBar.style.width = '100%';
+  }
+
+  // Social share handlers
+  if (shareWhatsappBtn) {
+    shareWhatsappBtn.onclick = function() {
+      const percent = scorePercentElem.textContent;
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(`I scored ${scoreElem.textContent}/${totalQuestionsElem.textContent} (${percent}%) on the Current Affairs Quiz! Try it: ${window.location.href}`);
+      window.open(`https://wa.me/?text=${text}`, '_blank');
+    };
+  }
+  if (shareTwitterBtn) {
+    shareTwitterBtn.onclick = function() {
+      const percent = scorePercentElem.textContent;
+      const text = encodeURIComponent(`I scored ${scoreElem.textContent}/${totalQuestionsElem.textContent} (${percent}%) on the Current Affairs Quiz!`);
+      const url = encodeURIComponent(window.location.href);
+      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+    };
   }
 
   function resetQuiz() {
@@ -319,7 +448,14 @@ button.answer:hover {
     score = 0;
     quizContainer.hidden = false;
     scoreContainer.hidden = true;
+    if (progressBar) progressBar.style.width = '0%';
     showQuestion();
+  }
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('service-worker.js');
+    });
   }
 
   startBtn.addEventListener('click', async () => {
