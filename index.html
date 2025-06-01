@@ -366,6 +366,25 @@
     progressBar.style.width = percent + '%';
   }
 
+  function startTimer() {
+    timeLeft = 60;
+    updateTimerDisplay();
+    timer = setInterval(() => {
+      timeLeft--;
+      updateTimerDisplay();
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        showScore(true); // true = timed out
+      }
+    }, 1000);
+  }
+  function updateTimerDisplay() {
+    timerElem.textContent = `Time Left: ${timeLeft}s`;
+  }
+  function stopTimer() {
+    if (timer) clearInterval(timer);
+    timerElem.textContent = '';
+  }
   function showQuestion() {
     answered = false;
     feedbackElem.textContent = '';
@@ -485,3 +504,13 @@
 
 <!-- End of quiz.html -->
 <!-- This HTML file contains a simple current affairs quiz application. It fetches questions from the Open Trivia DB API, displays them to the user, and allows them to answer. The user's score is displayed at the end of the quiz. The design is responsive and uses CSS for styling. The JavaScript handles the logic for fetching questions, displaying them, and managing user interactions. -->
+
+<!-- In service-worker.js, add more files if you add images, CSS, etc.
+return cache.addAll([
+  './',
+  './index.html',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
+  // Add more assets here if needed
+]); -->
